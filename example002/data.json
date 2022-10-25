@@ -1,0 +1,17 @@
+{
+	"images": [
+		{"title": "jpg", "path": "QmSCj1Wt8fWvYzaDd2CeroydgSxhStCfMEYL3MCMu64KUL"},
+		{"title": "png", "path": "QmR7gUhbX71vjdzABynXzBtfVMSLUMF4XzZhiptdzGFkWw"}
+	],
+	"videos": [
+		{"title": "mp4", "path": "QmTpmjowc8MU5ZmUt1GTHALHUBPPDZGCYZ2Gmqhwvizd38"},
+		{"title": "fmp4", "path": "QmbfWMHVe3TZfEE8BcdoxpLLa6uaX7hJzVpAUGMf91uduX"}
+	],
+	"dash": [
+		{"title": "dash", "mpd": "out_dash.mpd", "path": "QmRyE3rS4ApQt8nDoguMKtfuRBL3Aw1eQzCr4m2NXbeHEK"}
+	],
+	"hls": [
+		{"title": "hls", "m3u8": "video.m3u8", "path": "QmWByDDBRt7rednXkPP8AR6KwQANuSdcwXs5QPiHeGFQKT"}
+	]
+
+}
