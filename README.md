@@ -89,14 +89,5 @@ Braveブラウザで`ipfs://QmRTRQQbUuMm8f4Ag47k8BEJStzdWj3ngZrFhiG9jzVuhd`を�
 
 ※ BraaveブラウザでもHTMLを`ipfs://`で表示した場合にだけ、画像等のコンテンツを`ipfs://CID`で表示できる。
 
-## IPFS Public Gatewayでコンテンツを表示する
-
-下記のオンラインのPublic Gatewayでコンテンツを表示してみる。
-
-[Public Gateway Checker | IPFS](https://ipfs.github.io/public-gateway-checker/) 
-
-```
-https://ipfs.io/ipfs/QmbPdU5M21ZEKwQ28J2zHDQX79TXksYUVfoNJNREgvaWRF/
-```
 
 
