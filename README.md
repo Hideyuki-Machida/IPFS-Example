@@ -2,6 +2,8 @@
 
 分散型インターネットの基盤のひとつ、IPFSを色々試してみる。
 
+
+* [IPFS](https://ipfs.tech//)
 * [IPFS Docs](https://docs.ipfs.tech/)
 * [ProtoSchool](https://proto.school/)
 
@@ -90,4 +92,149 @@ Braveブラウザで`ipfs://QmRTRQQbUuMm8f4Ag47k8BEJStzdWj3ngZrFhiG9jzVuhd`を�
 ※ BraaveブラウザでもHTMLを`ipfs://`で表示した場合にだけ、画像等のコンテンツを`ipfs://CID`で表示できる。
 
 
+## IPFS PUBSUB を試す
+[Take a look at pubsub on IPFS](https://blog.ipfs.tech/25-pubsub/) 
 
+
+まずipfs-Dockerを使用して、Containerを複数起動する。
+
+```
+$ docker run --name ipfs_001 -p 4001:4001 -p 4001:4001/udp -p 8080:8080 -p 8081:8081 -p 5001:5001 ipfs/go-ipfs daemon --enable-pubsub-experiment
+
+> "ID": "12D3KooWGY2R2PuA7VArN2DZXaQoiGRzZtVWxNCW6Rv8cHGuZzeG"
+```
+```
+$ docker run --name ipfs_002 -p 4002:4001 -p 4002:4001/udp -p 8090:8080 ipfs/go-ipfs daemon --enable-pubsub-experiment
+
+> "ID": "12D3KooWERwpEJHSCs35fWB8wy3sVFiMvzxGXHTb1NFZFdT9VGo1"
+```
+```
+$ docker run --name ipfs_003 -p 4003:4001 -p 4003:4001/udp -p 8100:8080 ipfs/go-ipfs daemon --enable-pubsub-experiment
+
+> "ID": "12D3KooWQQMfDmzCT4M8Z6wc1v1wzEEKKM5MLE7orxthExVfQXnw"
+```
+
+`$ ipfs swarm peers`で、複数のノードに接続されていることがわかる。
+
+```
+$ ipfs swarm peers
+~
+
+```
+
+わかりやすくするために、ローカルノード以外をdisconnectしたい。
+まず、IPFS Deamon起動時にconectionされるリストを表示する。
+
+```
+$ ipfs bootstrap list
+/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN
+/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa
+/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb
+/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt
+/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ
+/ip4/104.131.131.82/udp/4001/quic/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ
+```
+
+すべての接続先を削除
+
+```
+$ ipfs bootstrap rm --all
+```
+
+作成した各Containerをrestartするとbootstrap listが空になっている。
+
+```
+$ ipfs bootstrap list
+```
+
+`$ ipfs swarm peers`でローカルノード同士のみが接続されていることが確認できる。
+
+```
+$ ipfs swarm peers
+/ip4/172.17.0.3/tcp/4001/p2p/12D3KooWERwpEJHSCs35fWB8wy3sVFiMvzxGXHTb1NFZFdT9VGo1
+/ip4/172.17.0.3/udp/4001/quic/p2p/12D3KooWERwpEJHSCs35fWB8wy3sVFiMvzxGXHTb1NFZFdT9VGo1
+/ip4/172.17.0.4/udp/4001/quic/p2p/12D3KooWQQMfDmzCT4M8Z6wc1v1wzEEKKM5MLE7orxthExVfQXnw
+/ip4/172.17.0.4/udp/4001/quic/p2p/12D3KooWQQMfDmzCT4M8Z6wc1v1wzEEKKM5MLE7orxthExVfQXnw
+```
+
+subscribe側で下記を実行。待受状態になる。
+
+```
+$ ipfs pubsub sub foo
+```
+
+publish側で下記を実行。messageを送信。
+
+```
+$ echo "hello world" > test.txt
+$ ipfs pubsub pub foo test.txt
+```
+
+subscribe側でmessageが表示される。
+
+```
+$ ipfs pubsub sub foo
+hello world
+```
+
+## AWS EC2上のIPFS を試す
+
+こちらを参考にAWS EC2 でいろいろ試してみる。
+
+[EC2上にIPFS NODEを作成する](https://blog.agile.esm.co.jp/entry/2022/07/15/120000) 
+
+上記の通りに環境構築し、docker runの部分だけ、`--enable-pubsub-experiment`を追加する。
+
+```
+sudo docker run -d --name ipfs_host -v $ipfs_staging:/export -v $ipfs_data:/data/ipfs -p 4001:4001 -p 0.0.0.0:8080:8080 ipfs/go-ipfs:latest daemon --enable-pubsub-experiment
+```
+
+### ■ EC2上のpublic gatewayでIPFSコンテンツを表示する
+
+```
+{パブリック IP}:8080/ipfs/QmbPdU5M21ZEKwQ28J2zHDQX79TXksYUVfoNJNREgvaWRF
+```
+
+### ■ ローカルとEC2上のIPFSノード同士でPUBSUB
+
+EC2上のIPFSノードのPeer IDを確認。
+
+```
+$ sudo docker exec ipfs_host ipfs id
+{
+	"ID": "12D3KooWPEjot6hgFjK8SVE5fwgcj6wMGMq44JE3sUiKhf1yqQrS",
+	~
+}
+```
+
+EC2上のIPFSノードのAddressesを確認。
+
+```
+$ sudo docker exec ipfs_host ipfs swarm addrs local
+/ip4/127.0.0.1/tcp/4001
+/ip4/127.0.0.1/udp/4001/quic
+/ip4/{パブリック IP}/tcp/4001
+/ip4/{パブリック IP}/udp/34449/quic
+/ip4/{パブリック IP}/udp/4001/quic
+/ip4/172.17.0.2/tcp/4001
+/ip4/172.17.0.2/udp/4001/quic
+```
+
+ローカルのノードからEC2上のIPFSノードにConnectする。
+
+```
+$ ipfs swarm connect /ip4/{パブリック IP}/tcp/4001/p2p/12D3KooWPEjot6hgFjK8SVE5fwgcj6wMGMq44JE3sUiKhf1yqQrS
+connect 12D3KooWPEjot6hgFjK8SVE5fwgcj6wMGMq44JE3sUiKhf1yqQrS success
+```
+
+ローカルのノードとpubsubできるpeerの中にEC2上のIPFSノードのPeer IDがあることを確認。
+あとは、相互にpubsubできる。
+
+※ 直接EC2上のIPFSノードにConnectしているローカルノード以外からもConnectしているローカルノードを経由してpubsubできる。
+
+```
+$ ipfs pubsub peers
+~
+12D3KooWPEjot6hgFjK8SVE5fwgcj6wMGMq44JE3sUiKhf1yqQrS
+~
+```
