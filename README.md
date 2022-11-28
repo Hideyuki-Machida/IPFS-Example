@@ -177,7 +177,7 @@ $ ipfs pubsub sub foo
 hello world
 ```
 
-## AWS EC2上のIPFS を試す
+## AWS EC2上でIPFS を試す
 
 こちらを参考にAWS EC2 でいろいろ試してみる。
 
@@ -238,3 +238,40 @@ $ ipfs pubsub peers
 12D3KooWPEjot6hgFjK8SVE5fwgcj6wMGMq44JE3sUiKhf1yqQrS
 ~
 ```
+## IPFSでシンプルなP2Pチャットを試す
+
+PUBSUBを使用して、シンプルなP2Pチャットを試してみる。
+
+
+### ■ IPFSを起動
+
+```
+$ ipfs daemon
+```
+
+### ■ チャットAPPサーバーのinstall
+
+```
+$ cd example003
+$ node install
+```
+
+### ■ チャットAPPサーバーを起動する
+
+```
+$ node app.js 3000 'http://127.0.0.1:5002/api/v0/'
+```
+
+### ■ ブラウザでチャットAPPのUIを表示
+
+```
+$ open http://127.0.0.1:3000/
+```
+
+### ■ APPのUIでメッセージを送信
+
+* UIの remote にお互いの own Peer ID を入力
+* topicに共通のtopicを入力
+* 双方の CONNECT ボタンをクリックしてしばらくすると、pubsub_peersに接続先のPeer IDが表示される
+* SEND ボタンをクリックしてメッセージを送信すると、お互いのUIにメッセージが表示される
+

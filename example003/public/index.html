@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="js">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>IPFS SimpleChat</title>
+		<link rel="stylesheet" href="main.css" type="text/css">
+	</head>
+	<body>
+		<div id="message_area">
+			<ul id="message_list"></ul>
+			<div id="message_controls">
+				<textarea id="message_input">メッセージ</textarea>
+				<button id="send_button">SEND</button>
+			</div>
+		</div>
+
+		<div id="controls_area">
+			<p>
+				<h4>pubsub_peers</h4>
+				<textarea id="pubsub_peers"></textarea> <br/>
+			</p>
+
+			<p>
+				<h4>own</h4>
+				<input id="own_id" type="text">
+			</p>
+			<p>
+				<h4>remote</h4>
+				<input id="remote_id" type="text">
+			</p>
+			<p>
+				<h4>topic</h4>
+				<input id="topic" type="text">
+			</p>
+
+			<button id="connect_button">CONNECT</button>
+			<button id="disconnect_button">DISCONNECT</button>
+		</div>
+
+		<template id="message_template">
+			<li>
+				<p class="id"></p>
+				<p class="time"></p>
+				<p class="message"></p>
+			</li>
+		</template>
+
+	</body>
+	<script type="module" src="main.js"></script>
+
+</html>
